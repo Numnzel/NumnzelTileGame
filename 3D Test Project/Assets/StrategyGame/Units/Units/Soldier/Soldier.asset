@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2936031db412fc54eb410d5b0aacddf8, type: 3}
+  m_Name: Soldier
+  m_EditorClassIdentifier: 
+  action: {fileID: 11400000, guid: 8b2c17abba16c634e8d5742433b2dcfc, type: 2}
+  health: 100
+  cName: Soldier
+  mesh: {fileID: -8319465574948283117, guid: 08582ab7d90b57f41af05cb7f95c84b1, type: 3}
+  meshMaterial: {fileID: 2100000, guid: 8da62b5712c13474ea4bbea024714f38, type: 2}
+  movement: 5
