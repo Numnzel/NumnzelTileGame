@@ -189,6 +189,9 @@ public void Select() {
 
 	public void UpdateUIHoveredCell() {
 
+		if (currentCell == null)
+			return;
+
 		UIManager.Instance.UpdateTerrainUI(currentCell);
 
 		//if (targetTerrain != null)
@@ -196,6 +199,9 @@ public void Select() {
 	}
 
 	public void UpdateUISelectedUnit() {
+
+		if (hoveredUnit == null)
+			return;
 
 		UIManager.Instance.UpdateUnitCommandUI(hoveredUnit);
 		UIManager.Instance.UpdateUnitSelectionUI(hoveredUnit);

@@ -14,10 +14,13 @@ public class Salute : Action {
 		if (unit == null)
 			return;
 		
+		// Action to be done:
 		this.Log(salute + unit.cName);
-		GameGrid gameGrid = unit.GetComponentInParent<GameGrid>();
+
+		/*
+		GameGrid gameGrid = unit.transform.parent.GetComponent<GameGrid>();
 		
 		if (gameGrid != null)
-			gameGrid.ReadCell(unit.transform.position);
+			gameGrid.ReadCell(unit.transform.position);*/
 	}
 }
