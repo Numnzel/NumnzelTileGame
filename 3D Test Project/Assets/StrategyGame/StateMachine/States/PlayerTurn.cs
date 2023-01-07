@@ -16,7 +16,7 @@ public class PlayerTurn : State {
 	public override IEnumerator Attack(Action action) {
 
 		var isDead = false; // BattleSystem.Enemy.Damage(BattleSystem.Player.Attack);
-		Debug.Log(battleSystem.Player.cName + "Attacked.");
+		Debug.Log(battleSystem.Player.uName + "Attacked.");
 		battleSystem.Player.DoAction(action);
 
 		yield return new WaitForSeconds(1f);
@@ -30,7 +30,7 @@ public class PlayerTurn : State {
 	public override IEnumerator Move(Action action) {
 
 		//BattleSystem.Interface.SetDialogText($"{BattleSystem.Player.Name} feels renewed strength!");
-		Debug.Log(battleSystem.Player.cName + "Moved.");
+		Debug.Log(battleSystem.Player.uName + "Moved.");
 		//battleSystem.Player.Heal(5);
 
 		yield return new WaitForSeconds(1f);

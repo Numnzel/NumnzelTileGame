@@ -31,7 +31,7 @@ public class UnitUI : MonoBehaviour {
     void AssignInfo() {
 
         if (unit != null)
-            unitName = unit.cName;
+            unitName = unit.uName;
     }
 
     void PopulateInfo() {

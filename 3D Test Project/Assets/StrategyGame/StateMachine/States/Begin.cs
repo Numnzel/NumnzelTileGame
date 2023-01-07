@@ -9,7 +9,7 @@ public class Begin : State {
 	public override IEnumerator Start()	{
 		
 		//BattleSystem.Interface.SetDialogText($"A wild {BattleSystem.Enemy.Name} appeared!");
-		Debug.Log("A wild " + battleSystem.Enemy.cName + " appeared!");
+		Debug.Log("A wild " + battleSystem.Enemy.uName + " appeared!");
 
 		yield return new WaitForSeconds(2f);
 

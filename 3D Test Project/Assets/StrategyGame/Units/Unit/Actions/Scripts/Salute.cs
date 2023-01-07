@@ -15,7 +15,7 @@ public class Salute : Action {
 			return;
 		
 		// Action to be done:
-		this.Log(salute + unit.cName);
+		this.Log(salute + unit.uName);
 
 		/*
 		GameGrid gameGrid = unit.transform.parent.GetComponent<GameGrid>();
