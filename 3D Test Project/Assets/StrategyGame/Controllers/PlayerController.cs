@@ -8,13 +8,13 @@ using UnityEngine.InputSystem;
 public class PlayerController : Controller {
 
 	// TODO: Make an interface for controlling selector/menuPlayer
-	// TODO: Instead of getting a reference for selector, create a selector
-	public GameObject selectorObject;
 	public GameObject cameraSystemObject;
 
+	[SerializeField] GameObject selectorObject;
 	[SerializeField] float cameraSensitivity = 0.15f;
 
 	Selector selector;
+	Faction faction;
 	CameraSystem cameraSystem;
 	float dTime;
 	Vector2 cameraNavigation;
@@ -24,9 +24,10 @@ public class PlayerController : Controller {
 	public Vector2 MousePosition { get => mousePosScreen; set => mousePosScreen = value; }
 
 	void Start() {
-		
+
 		selector = selectorObject.GetComponent<Selector>();
 		cameraSystem = cameraSystemObject.GetComponent<CameraSystem>();
+		faction = GetComponent<Faction>();
 	}
 
 	void Update() {
@@ -36,8 +37,6 @@ public class PlayerController : Controller {
 
 		HandleInputs();
 		CameraNavigation();
-
-		// if (selector == null) // make singleton
 	}
 
 	public void TickInputs(float dTime) {
@@ -83,7 +82,7 @@ public class PlayerController : Controller {
 			selector.Select();
 			selector.SelectedUnitCircleSelect();
 			selector.SelectedUnitIndicatorSelect();
-			selector.UpdateUISelectedUnit();
+			selector.UpdateUISelectedUnit(faction.factionNumber);
 		}
 		//else Debug.Log(EventSystem.current.currentSelectedGameObject); // only returns buttons, others are null
 	}

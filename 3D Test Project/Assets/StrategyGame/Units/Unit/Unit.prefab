@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 3216761864747474019}
   - component: {fileID: 3216761864747474028}
   - component: {fileID: 8484342541750926606}
+  - component: {fileID: -5451034345738573951}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -145,12 +146,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0482f394eed2c8242a0b5e7af5f460a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHP: 0
-  cName: 
+  uName: 
   actions: []
   circle: {fileID: 6470998020122359174}
   indicator: {fileID: 8784863982798509285}
-  movement: 0
+--- !u!114 &-5451034345738573951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3216761864747474031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac0d31f067eb7074c94ab42f031b4373, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  factionNumber: 0
 --- !u!1001 &2492407054787419075
 PrefabInstance:
   m_ObjectHideFlags: 0

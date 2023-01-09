@@ -198,12 +198,24 @@ public void Select() {
 		//Debug.Log("VIEW COST: " + targetTerrain.ViewCost);
 	}
 
-	public void UpdateUISelectedUnit() {
+	public void UpdateUISelectedUnit(int playerFactionNumber = 0) {
 
-		if (hoveredUnit == null)
+		Faction unitFaction = null;
+
+		/*
+		if (hoveredUnit == null && maintainSelection)
 			return;
+		*/
 
-		UIManager.Instance.UpdateUnitCommandUI(hoveredUnit);
 		UIManager.Instance.UpdateUnitSelectionUI(hoveredUnit);
+
+		if (hoveredUnit != null)
+			unitFaction = hoveredUnit.GetComponent<Faction>();
+
+		if (unitFaction != null && unitFaction.factionNumber == playerFactionNumber)
+			UIManager.Instance.UpdateUnitCommandUI(hoveredUnit);
+		else
+			UIManager.Instance.UpdateUnitCommandUI(null);
+
 	}
 }

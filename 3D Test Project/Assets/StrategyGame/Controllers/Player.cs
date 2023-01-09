@@ -5,5 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
 	int playerNumber;
+	public string playerName;
 	PlayerState state;
 }
