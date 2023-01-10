@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class PlayerTurn : State {
 
-	public PlayerTurn(BattleSystem battleSystem) : base(battleSystem) {}
+	public PlayerTurn(BattleStateMachine battleSystem) : base(battleSystem) {}
 
 	public override IEnumerator Start() {
 
-		//BattleSystem.Interface.SetDialogText("Choose an action.");
+		//BattleStateMachine.Interface.SetDialogText("Choose an action.");
 		Debug.Log("Choose an action");
 		yield break;
 	}
 
-	public override IEnumerator Attack(Action action) {
+	public override IEnumerator Execute() {
 
-		var isDead = false; // BattleSystem.Enemy.Damage(BattleSystem.Player.Attack);
-		Debug.Log(battleSystem.Player.uName + "Attacked.");
-		battleSystem.Player.DoAction(action);
+		Validator validator = new ValidatorCompare<double>(5f, 5, Operators.equal);
+		Debug.Log($"Hola validator: {validator.IsValid()}");
+
+		var isDead = false;
+		Debug.Log(battleSystem.Player.playerName + "Attacked.");
 
 		yield return new WaitForSeconds(1f);
 
@@ -25,16 +27,5 @@ public class PlayerTurn : State {
 			battleSystem.SetState(new Won(battleSystem));
 		else
 			battleSystem.SetState(new EnemyTurn(battleSystem));
-	}
-
-	public override IEnumerator Move(Action action) {
-
-		//BattleSystem.Interface.SetDialogText($"{BattleSystem.Player.Name} feels renewed strength!");
-		Debug.Log(battleSystem.Player.uName + "Moved.");
-		//battleSystem.Player.Heal(5);
-
-		yield return new WaitForSeconds(1f);
-
-		battleSystem.SetState(new EnemyTurn(battleSystem));
 	}
 }

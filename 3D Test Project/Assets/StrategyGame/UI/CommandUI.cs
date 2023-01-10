@@ -52,7 +52,10 @@ public class CommandUI : MonoBehaviour {
         foreach (Action action in actions) {
 
             GameObject button = Instantiate(actionButton, actionsPanel.transform);
-            button.GetComponent<PressAction>().SetAction(action);
+            ActionButton buttonAction = button.GetComponent<ActionButton>();
+            buttonAction.SetAction(action);
+            buttonAction.SetUnit(unit);
+
             TMPro = button.GetComponentInChildren<TMP_Text>();
             TMPro.text = action.actionName;
             buttons.Add(button);

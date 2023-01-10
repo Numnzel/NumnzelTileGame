@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Begin : State {
 
-	public Begin(BattleSystem battleSystem) : base(battleSystem) {}
+	public Begin(BattleStateMachine battleSystem) : base(battleSystem) {}
 
 	public override IEnumerator Start()	{
 		
-		//BattleSystem.Interface.SetDialogText($"A wild {BattleSystem.Enemy.Name} appeared!");
-		Debug.Log("A wild " + battleSystem.Enemy.uName + " appeared!");
+		//BattleStateMachine.Interface.SetDialogText($"A wild {BattleStateMachine.Enemy.Name} appeared!");
+		Debug.Log("A wild " + battleSystem.Enemy.playerName + " appeared!");
 
 		yield return new WaitForSeconds(2f);
 

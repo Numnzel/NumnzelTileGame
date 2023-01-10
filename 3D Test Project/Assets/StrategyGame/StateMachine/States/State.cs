@@ -4,9 +4,9 @@ using UnityEngine;
 
 public abstract class State {
 
-	protected BattleSystem battleSystem;
+	protected BattleStateMachine battleSystem;
 
-	public State(BattleSystem battleSystem) {
+	public State(BattleStateMachine battleSystem) {
 
 		this.battleSystem = battleSystem;
 	}
@@ -15,11 +15,7 @@ public abstract class State {
 		yield break;
 	}
 
-	public virtual IEnumerator Attack(Action action) {
-		yield break;
-	}
-
-	public virtual IEnumerator Move(Action action) {
+	public virtual IEnumerator Execute() {
 		yield break;
 	}
 }

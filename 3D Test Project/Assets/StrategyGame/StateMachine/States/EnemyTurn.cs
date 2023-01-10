@@ -4,14 +4,14 @@ using UnityEngine;
 
 public partial class EnemyTurn : State {
 
-	public EnemyTurn(BattleSystem battleSystem) : base(battleSystem) {}
+	public EnemyTurn(BattleStateMachine battleSystem) : base(battleSystem) {}
 
 	public override IEnumerator Start()	{
 		
-		//BattleSystem.Interface.SetDialogText($"{BattleSystem.Enemy.Name} attacks!");
-		Debug.Log(battleSystem.Enemy.name + "attacks!");
+		//BattleStateMachine.Interface.SetDialogText($"{BattleStateMachine.Enemy.Name} attacks!");
+		Debug.Log(battleSystem.Enemy.name + " (Enemy) attacks!");
 
-		var isDead = false; // battleSystem.Player.Damage(battleSystem.Enemy.Attack);
+		var isDead = false; // battleSystem.Player.Damage(battleSystem.Enemy.Execute);
 
 		yield return new WaitForSeconds(1f);
 

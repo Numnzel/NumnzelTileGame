@@ -13,7 +13,7 @@ public class Salute : Action {
 
 		if (unit == null)
 			return;
-		
+
 		// Action to be done:
 		this.Log(salute + unit.uName);
 

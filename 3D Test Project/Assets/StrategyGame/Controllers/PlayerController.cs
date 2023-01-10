@@ -5,13 +5,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class PlayerController : Controller {
+public class PlayerController : Controller, IActor {
 
 	// TODO: Make an interface for controlling selector/menuPlayer
 	public GameObject cameraSystemObject;
 
 	[SerializeField] GameObject selectorObject;
 	[SerializeField] float cameraSensitivity = 0.15f;
+	[SerializeField] List<Action> actions;
 
 	Selector selector;
 	Faction faction;
@@ -109,5 +110,16 @@ public class PlayerController : Controller {
 
 		if (context.performed)
 			cameraNavigation = context.ReadValue<Vector2>();
+	}
+
+	public void DoAction(Action action) {
+
+		action.Execute(gameObject);
+	}
+
+	public void EndTurn() {
+
+		// TODO: Find end turn action in array
+		DoAction(actions[0]);
 	}
 }

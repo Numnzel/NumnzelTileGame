@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game Data/Action/Move")]
-public class Move : Action {
-
-	public float A;
-	public float B;
+[CreateAssetMenu(menuName = "Game Data/Action/EndTurn")]
+public class EndTurn : Action {
 
 	public override void Execute(GameObject parent) {
-
+		
 		// Action to be done:
-		this.Log("Calculation: " + A + B);
+		BattleStateMachine.Instance.ExecuteState();
 	}
 }
