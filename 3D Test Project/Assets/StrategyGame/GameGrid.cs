@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DigitalRuby.Tween;
+using System.Linq;
 
 [System.Flags]
 public enum readCellsAreaFlags {
@@ -254,128 +255,31 @@ public class GameGrid : MonoBehaviour {
 	}
 
 	///<summary> Method: Gets the cells in an area considering movement costs. </summary>
-	public List<GameObject> GetMovementCells(GameObject originCell, int movement, readCellsAreaFlags flags = 0) {
+	public static List<CellTerrain> GetMovementCells(CellTerrain originCell, int movement) {
 
-		return new List<GameObject>();
-	}
+		List<CellTerrain> inRangeCells = new List<CellTerrain>();
+		List<CellTerrain> previousCells = new List<CellTerrain>();
+		int stepCount = 0;
 
-	/*
-	///<summary> Method: Gets the cells in an area considering movement costs. </summary>
-	public HashSet<GameObject> GetMovementCells(GameObject originCell, int movement, readCellsAreaFlags flags = 0) {
+		inRangeCells.Add(originCell);
+		previousCells.Add(originCell);
 
-		if (originCell == null || movement < 0)
-			return null;
+		while (stepCount < movement) {
 
-		// if movement == 0 return originCell ???
+			List<CellTerrain> surroundingCells = new List<CellTerrain>();
 
+			foreach (CellTerrain cell in previousCells)
+				surroundingCells.AddRange(ReadCellNeighbour(cell));
 
-		Dictionary<GameObject, int> cellsMPoints = new Dictionary<GameObject, int>();
-		HashSet<GameObject> cellsRead = new HashSet<GameObject>();
-		HashSet<GameObject> cellsBuffer = new HashSet<GameObject>();
+			inRangeCells.AddRange(surroundingCells);
 
-		cellsBuffer.Add(originCell);
-		cellsMPoints.Add(originCell, movement);
+			previousCells = surroundingCells.Distinct().ToList();
 
-		do {
-
-			foreach (GameObject bCell in cellsBuffer) {
-
-				List<GameObject> cellsNeightbour = ReadCellNeighbour(bCell);
-
-				foreach (GameObject nCell in cellsNeightbour) {
-
-					if (nCell == null)
-						continue;
-
-					int moveCost = nCell.GetComponent<CellTerrain>().MoveCost;
-					int movePoints = 0;
-
-					if (cellsMPoints.TryGetValue(bCell, out movePoints))
-						if (movePoints >= moveCost) {
-							movePoints -= moveCost;
-							cellsMPoints.TryAdd(nCell, movePoints);
-							cellsRead.Add(nCell);
-						}
-				}
-			}
-		} while (cellsMPoints.ContainsValue(1));
-
-		//cellsMPoints.
-
-		//cellsSet.UnionWith(cellsBuffer);
-		return cellsRead;
-	}*/
-
-	///<summary> Method: Check if the movement points are enough to move to a cell. Gets the difference in an out parameter.
-	///Returns false with a difference of -1 if there's an error.
-	///</summary>
-	/*
-	bool CheckMovement(GameObject objectiveCell, int movement, out int difference) {
-
-		if (objectiveCell == null || movement <= 0) {
-			
-			difference = -1;
-			return false;
+			++stepCount;
 		}
 
-		CellTerrain oCell = objectiveCell.GetComponent<CellTerrain>();
-
-		if (oCell == null) {
-
-			difference = -1;
-			return false;
-		}
-
-		int diff = oCell.MoveCost - movement;
-		difference = diff;
-
-		return (diff > 0);
+		return inRangeCells.Distinct().ToList();
 	}
-	*/
-
-	///<summary> Method: Gets the cells around a cell in an area defined by distance. </summary>
-	/*
-	public GameObject[] ReadCellsArea(GameObject originCell, int distance, readCellsAreaFlags flags = 0) {
-
-		if (originCell == null || distance < 0)
-			return null;
-
-		HashSet<GameObject> cellsArea = new HashSet<GameObject>();
-		HashSet<GameObject> cellsRead = new HashSet<GameObject>();
-		HashSet<GameObject> cellsLast = new HashSet<GameObject>();
-
-		cellsArea.Add(originCell);
-		cellsLast.Add(originCell);
-
-		//Debug.DrawLine(aCell.transform.position + Vector3.up, cell.transform.position + Vector3.up, new Color(255 * Math.Abs(directions[j].x), 255 * Math.Abs(directions[j].y), 255 * Math.Abs(directions[j].z)), 99);
-
-		for (int i = distance; i > 0; i--) {
-
-			foreach (GameObject lCell in cellsLast) {
-
-				GameObject[] neighbours = ReadCellNeighbour(lCell);
-
-				foreach (GameObject nCell in neighbours) {
-					Debug.DrawLine(nCell.transform.position, nCell.transform.position + (Vector3.up * 10), new Color((255 / distance) * i, 0, 255 - (255 / distance) * i), 99);
-					if (nCell != null && cellsRead != null && cellsArea != null && !cellsArea.Contains(nCell)) {
-						cellsRead.Add(nCell);
-					}
-				}
-			}
-
-			if (cellsRead != null) {
-				cellsArea.UnionWith(cellsRead);
-				cellsLast = cellsRead;
-			}
-
-			cellsRead = null;
-		}
-
-		GameObject[] objArray = new GameObject[cellsArea.Count];
-		cellsArea.CopyTo(objArray);
-		return objArray;
-	}
-	*/
 
 	///<summary> Method: Gets the cells adjacent to a cell. </summary>
 	public static List<CellTerrain> ReadCellNeighbour(CellTerrain originCell) {
@@ -390,9 +294,13 @@ public class GameGrid : MonoBehaviour {
 		directions[2] = new Vector3(0, 0, GridCellSize);
 		directions[3] = new Vector3(0, 0, -GridCellSize);
 
-		for (int i = 0; i < 4; i++)
-			cellsArea.Insert(i, ReadCell(originCell.transform.position + directions[i], true));
-
+		for (int i = 0; i < 4; i++) {
+			
+			CellTerrain cell = ReadCell(originCell.transform.position + directions[i], true);
+			if (cell != null)
+				cellsArea.Add(cell);
+		}
+		
 		return cellsArea;
 	}
 

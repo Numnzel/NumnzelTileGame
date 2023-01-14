@@ -35,7 +35,7 @@ public class Move : Action {
 
 	private List<CellTerrain> Search(GameObject parent, int movement) {
 
-		return GameGrid.ReadCellNeighbour(GameGrid.ReadCell(parent.transform.position));
+		return GameGrid.GetMovementCells(GameGrid.ReadCell(parent.transform.position), movement);
 	}
 
 	private void Clicked(CellTerrain cellTerrain) {
