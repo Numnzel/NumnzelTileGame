@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DigitalRuby.Tween;
 
 [System.Flags]
 public enum readCellsAreaFlags {
@@ -15,6 +16,7 @@ public class GameGrid : MonoBehaviour {
 	const string TagTerrain = "TerrainCube";
 	const int LayerTerrain = 6;
 	const int GridCellSize = 1;
+	const float offsy = 0.001f;
 
 	[SerializeField] int _width, _height;
 
@@ -22,14 +24,26 @@ public class GameGrid : MonoBehaviour {
 	//LineRenderer lineRenderer;
 	public Material gridLineMaterial;
 	public SelectionCell selectionCellPrefab;
-	public CellHighlight cellHighlightPrefab;
+	[SerializeField] private CellHighlight cellHighlightPrefab;
+	private static CellHighlight cellHighlight;
 	public GameObject SphereTest;
-	public GameObject highlightContainer;
 	public GameObject gridContainer;
-	float offsy = 0.01f;
 	public PathFinder pathFinder;
 
 	public readCellsAreaFlags flags;
+
+	static GameGrid _instance;
+	public static GameGrid Instance { get => _instance; }
+
+	void Awake() {
+		
+		if (_instance != null && _instance != this)
+			Destroy(gameObject);
+		else
+			_instance = this;
+
+		cellHighlight = cellHighlightPrefab;
+	}
 
 	void Start() {
 
@@ -94,7 +108,7 @@ public class GameGrid : MonoBehaviour {
 	}
 
 	///<summary> Method: Casts a ray that only interacts with terrain. </summary>
-	bool RayCastTerrain(Ray ray, out RaycastHit hit, float maxDistance = Mathf.Infinity) {
+	static bool RayCastTerrain(Ray ray, out RaycastHit hit, float maxDistance = Mathf.Infinity) {
 
 		bool temp = Physics.Raycast(
 			ray: ray,
@@ -107,12 +121,12 @@ public class GameGrid : MonoBehaviour {
 	}
 
 	///<summary> Method: Spawn a GameObject on a terrain cell. Returns the spawned instance. </summary>
-	public GameObject SpawnOnCell(GameObject gObject, CellTerrain targetCell, GameObject parent = null) {
+	public static GameObject SpawnOnCell(GameObject gObject, CellTerrain targetCell, GameObject parent = null) {
 
 		if (gObject == null || targetCell == null || !targetCell.CompareTag(TagTerrain))
 			return null;
 
-		Transform parentObj = (parent == null) ? this.transform : parent.transform;
+		Transform parentObj = (parent == null) ? Instance.transform : parent.transform;
 		GameObject instance = Instantiate(gObject, parentObj);
 		MoveToCell(instance, targetCell);
 
@@ -120,7 +134,7 @@ public class GameGrid : MonoBehaviour {
 	}
 
 	///<summary> Method: Move a GameObject to a terrain cell. </summary>
-	public void MoveToCell(GameObject gObject, CellTerrain targetCell, bool setParent = false) {
+	public static void MoveToCell(GameObject gObject, CellTerrain targetCell, bool setParent = false) {
 
 		if (gObject == null || targetCell == null || !targetCell.CompareTag(TagTerrain))
 			return;
@@ -134,14 +148,40 @@ public class GameGrid : MonoBehaviour {
 		gObject.transform.position = targetCellPos;
 	}
 
+	///<summary> Method: Move with tween a GameObject to a terrain cell. </summary>
+	public static void MoveTweenToCell(GameObject gObject, CellTerrain targetCell, System.Func<float, float> tweenScale, bool setParent = false) {
+
+		if (gObject == null || targetCell == null || !targetCell.CompareTag(TagTerrain))
+			return;
+
+		Vector3 targetCellPos = targetCell.transform.position;
+
+		if (setParent)
+			gObject.transform.SetParent(targetCell.gameObject.transform);
+
+		targetCellPos.y += offsy;
+		TweenUtils.TweenMove(gObject, targetCellPos, tweenScale);
+	}
+
 	///<summary> Method: Move a unit to a terrain cell. </summary>
-	public void MoveUnitToCell(Unit unit, CellTerrain targetCell) {
+	public static void MoveUnitToCell(Unit unit, CellTerrain targetCell, System.Func<float, float> tweenScale) {
 
 		if (unit == null || targetCell == null || !targetCell.CompareTag(TagTerrain) || targetCell.Unit != null)
 			return;
 
-		LinkUnitToCell(unit, targetCell);
-		MoveToCell(unit.gameObject, targetCell, true);
+		// unlink unit from original cell
+		CellTerrain originalCell = ReadCell(unit.transform.position);
+		if (originalCell)
+			Instance.UnlinkUnitFromCell(unit, originalCell);
+
+		// link unit to target cell
+		Instance.LinkUnitToCell(unit, targetCell);
+
+		// check movement type
+		if (tweenScale == null)
+			MoveToCell(unit.gameObject, targetCell, true);
+		else
+			MoveTweenToCell(unit.gameObject, targetCell, tweenScale);
 	}
 
 	///<summary> Method: Links a unit to a terrain cell. </summary>
@@ -153,8 +193,17 @@ public class GameGrid : MonoBehaviour {
 		targetCell.Unit = unit;
 	}
 
+	///<summary> Method: Unlinks a unit from a terrain cell. </summary>
+	public void UnlinkUnitFromCell(Unit unit, CellTerrain targetCell) {
+
+		if (targetCell == null || !targetCell.CompareTag(TagTerrain))
+			return;
+
+		targetCell.Unit = null;
+	}
+
 	///<summary> Method: Remove a GameObject that is a child of a terrain cell. </summary>
-	public bool RemoveOnCell(GameObject gObject, CellTerrain targetCell) {
+	public static bool RemoveOnCell(GameObject gObject, CellTerrain targetCell) {
 
 		if (gObject == null || targetCell == null || !targetCell.CompareTag(TagTerrain) || !gObject.transform.IsChildOf(targetCell.transform))
 			return false;
@@ -164,7 +213,7 @@ public class GameGrid : MonoBehaviour {
 	}
 
 	///<summary> Method: Gets the terrain cell at the specified coordinates. </summary>
-	public CellTerrain ReadCell(Vector3 origin, bool dev = false) {
+	public static CellTerrain ReadCell(Vector3 origin, bool dev = false) {
 
 		CellTerrain terrainObject = null;
 		Ray ray = new Ray(origin + Vector3.up, Vector3.down * 2);
@@ -329,7 +378,10 @@ public class GameGrid : MonoBehaviour {
 	*/
 
 	///<summary> Method: Gets the cells adjacent to a cell. </summary>
-	public List<CellTerrain> ReadCellNeighbour(CellTerrain originCell) {
+	public static List<CellTerrain> ReadCellNeighbour(CellTerrain originCell) {
+
+		if (originCell == null)
+			return null;
 
 		List<CellTerrain> cellsArea = new List<CellTerrain>();
 		Vector3[] directions = new Vector3[4];
@@ -367,14 +419,22 @@ public class GameGrid : MonoBehaviour {
 	}
 
 	///<summary> Method: Spawns a highlight over passed cells. </summary>
-	void HighlightCells(List<CellTerrain> cells) {
+	public static void HighlightCells(List<CellTerrain> cells) {
 
 		if (cells == null)
 			return;
 
 		foreach (CellTerrain cell in cells)
-			if (cell.CompareTag(TagTerrain))
-				SpawnOnCell(cellHighlightPrefab.gameObject, cell, highlightContainer);
+			HighlightCell(cell);
+	}
+
+	///<summary> Method: Spawns a highlight over passed cell. </summary>
+	public static void HighlightCell(CellTerrain cell) {
+
+		if (cell == null || !cell.CompareTag(TagTerrain) || cell.GetComponentInChildren<CellHighlight>() != null)
+			return;
+
+		SpawnOnCell(cellHighlight.gameObject, cell, cell.gameObject);
 	}
 
 	///<summary> Method: Links units to their current cell. </summary>

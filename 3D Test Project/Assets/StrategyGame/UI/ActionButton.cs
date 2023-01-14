@@ -37,6 +37,5 @@ public class ActionButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
 		unit.DoAction(action);
 		//BattleStateMachine.Instance.ExecuteAction(action); // Player.DoAction(action);
-		Debug.Log("CLICKED");
 	}
 }

@@ -3,7 +3,12 @@ guid: f5894f80fa10b9a4eaebc41927ad8bac
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - gridLineMaterial: {instanceID: 0}
+  - selectionCellPrefab: {instanceID: 0}
+  - cellHighlightPrefab: {instanceID: 0}
+  - SphereTest: {instanceID: 0}
+  - gridContainer: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -74,7 +74,7 @@ public class PlayerController : Controller, IActor {
 	/// The selector tries to select an unit at his position and updates the UI acordingly
 	/// </summary>
 	void SelectorSelection() {
-
+		
 		// Check that the mouse cursor is not hovering an UI element
 		if (!isPointerOverGameObject) {
 

@@ -1,27 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DigitalRuby.Tween;
+using UnityEngine.Events;
 
 [CreateAssetMenu(menuName = "Game Data/Action/Move")]
 public class Move : Action {
 
-	public Unit unit;
+	Movement movement;
+	List<CellTerrain> cells;
 
 	public override void Execute(GameObject parent) {
 
 		if (parent == null)
 			return;
 
-		//Movement movement = parent.GetComponent<Movement>();
+		movement = parent.GetComponent<Movement>();
 
-		unit = parent.GetComponent<Unit>();
+		if (movement == null)
+			return;
 
-		// Action to be done:
-		this.Log("The unit " + unit.uName + " is trying to move.");
+		// get available cells to move
+		cells = Search(parent, movement.movement);
 
-		TweenUtils.TweenMoveUnit(unit, unit.transform.position + Vector3.forward * 3f, TweenScaleFunctions.Linear);
+		// add a listener to each cell
+		foreach (CellTerrain cell in cells) {
+			
+			if (cell == null || cell.Unit != null)
+				continue;
 
-		GameGrid gameGrid = parent.GetComponentInParent<GameGrid>();
+			GameGrid.HighlightCell(cell);
+			Selector.OnClick.AddListener(Clicked);
+		}
+	}
+
+	private List<CellTerrain> Search(GameObject parent, int movement) {
+
+		return GameGrid.ReadCellNeighbour(GameGrid.ReadCell(parent.transform.position));
+	}
+
+	private void Clicked(CellTerrain cellTerrain) {
+
+		if (cells.Contains(cellTerrain))
+			movement.Move(cellTerrain);
+
+		foreach (CellTerrain cell in cells) {
+
+			if (cell == null)
+				continue;
+
+			CellHighlight cellHighlight = cell.GetComponentInChildren<CellHighlight>();
+			if (cellHighlight != null)
+				GameGrid.RemoveOnCell(cellHighlight.gameObject, cell);
+
+			Selector.OnClick.RemoveAllListeners();
+		}
 	}
 }

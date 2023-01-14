@@ -2,16 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
+using UnityEngine.Events;
 
 public class Selector : MonoBehaviour {
 
 	static Selector _instance;
 	public static Selector Instance { get => _instance; }
+	public static UnityEvent<CellTerrain> OnClick { get => Instance._onClick; set => Instance._onClick = value; }
 
 	GameGrid gameGrid;
 	CellTerrain currentCell;
 	public Unit selectedUnit;
 	public Unit hoveredUnit;
+
+	public UnityEvent<CellTerrain> _onClick;
 
 	void Awake() {
 
@@ -24,9 +28,10 @@ public class Selector : MonoBehaviour {
 	void Start() {
 
 		gameGrid = GetComponentInParent<GameGrid>();
-		currentCell = gameGrid.ReadCell(transform.position, true);
+		currentCell = GameGrid.ReadCell(transform.position, true);
 		UpdateUIHoveredCell();
 	}
+
 	UnitIndicator GetUnitIndicator(Unit unit) {
 
 		if (unit != null)
@@ -34,6 +39,7 @@ public class Selector : MonoBehaviour {
 
 		return null;
 	}
+
 	UnitCircle GetUnitCircle(Unit unit) {
 
 		if (unit != null)
@@ -41,6 +47,7 @@ public class Selector : MonoBehaviour {
 
 		return null;
 	}
+
 	public void HoveredUnitIndicatorHighlight() {
 
 		UnitIndicator unitIndicator = GetUnitIndicator(hoveredUnit);
@@ -48,6 +55,7 @@ public class Selector : MonoBehaviour {
 		if (unitIndicator != null)
 			unitIndicator.SetSpriteHighlight();
 	}
+
 	public void HoveredUnitIndicatorDeselect() {
 
 		UnitIndicator unitIndicator = GetUnitIndicator(hoveredUnit);
@@ -55,6 +63,7 @@ public class Selector : MonoBehaviour {
 		if (unitIndicator != null)
 			unitIndicator.SetSpriteAvailable();
 	}
+
 	public void SelectedUnitIndicatorSelect() {
 
 		UnitIndicator unitIndicator = GetUnitIndicator(selectedUnit);
@@ -62,6 +71,7 @@ public class Selector : MonoBehaviour {
 		if (unitIndicator != null)
 			unitIndicator.SetSpriteSelected();
 	}
+
 	public void SelectedUnitIndicatorDeselect() {
 
 		UnitIndicator unitIndicator = GetUnitIndicator(selectedUnit);
@@ -69,6 +79,7 @@ public class Selector : MonoBehaviour {
 		if (unitIndicator != null)
 			unitIndicator.SetSpriteAvailable();
 	}
+
 	public void HoveredUnitCircleEnter() {
 
 		UnitCircle unitCircle = GetUnitCircle(hoveredUnit);
@@ -76,6 +87,7 @@ public class Selector : MonoBehaviour {
 		if (unitCircle != null)
 			unitCircle.SetVisibility(true);
 	}
+
 	public void HoveredUnitCircleExit() {
 
 		UnitCircle unitCircle = GetUnitCircle(hoveredUnit);
@@ -83,6 +95,7 @@ public class Selector : MonoBehaviour {
 		if (unitCircle != null && !unitCircle.Selected)
 			unitCircle.SetVisibility(false);
 	}
+
 	public void SelectedUnitCircleDeselect() {
 
 		UnitCircle unitCircle = GetUnitCircle(selectedUnit);
@@ -93,6 +106,7 @@ public class Selector : MonoBehaviour {
 			unitCircle.SetSelected(false);
 		}
 	}
+
 	public void SelectedUnitCircleSelect() {
 
 		UnitCircle unitCircle = GetUnitCircle(selectedUnit);
@@ -103,9 +117,13 @@ public class Selector : MonoBehaviour {
 			unitCircle.SetSelected(true);
 		}
 	}
+
 	public void Select() {
 
 		selectedUnit = currentCell.Unit;
+
+		if (OnClick != null)
+			OnClick.Invoke(currentCell);
 
 		//path = gameGrid.pathFinder.FindPath(highlightedCell, highlightedCellend);
 
@@ -156,7 +174,7 @@ public void Select() {
 		if (cell == null)
 			continue;
 
-		//GameObject highlight = gameGrid.SpawnOnCell(gameGrid.cellHighlightPrefab.gameObject, cell, gameGrid.highlightContainer);
+		//GameObject highlight = gameGrid.SpawnOnCell(gameGrid.cellHighlight.gameObject, cell, gameGrid.highlightContainer);
 		GameObject highlight = gameGrid.SpawnOnCell(new GameObject(), cell, gameGrid.highlightContainer);
 
 		TextMeshPro textMesh = highlight.AddComponent<TextMeshPro>();
@@ -182,10 +200,9 @@ public void Select() {
 			return false;
 
 		currentCell = targetCell;
-		gameGrid.MoveToCell(gameObject, currentCell);
+		GameGrid.MoveToCell(gameObject, currentCell);
 		return true;
 	}
-
 
 	public void UpdateUIHoveredCell() {
 

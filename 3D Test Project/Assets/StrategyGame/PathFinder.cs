@@ -7,7 +7,7 @@ using UnityEngine;
 public class PathFinder {
 
 	public GameGrid gameGrid;
-
+	/*
     public List<CellHighlight> FindPath(CellHighlight start, CellHighlight end) {
 
 		List<CellHighlight> openList = new List<CellHighlight>();
@@ -75,7 +75,7 @@ public class PathFinder {
 
 		return Mathf.RoundToInt(Mathf.Abs(startPos.x - endPos.x) + Mathf.Abs(startPos.y - endPos.y));
 	}
-
+	
 	List<CellHighlight> GetNeightbours(CellHighlight currentHighlightCell) {
 
 		CellTerrain currentCell = gameGrid.ReadCell(currentHighlightCell.transform.position, true);
@@ -83,8 +83,8 @@ public class PathFinder {
 		List<CellHighlight> neighboursHCells = new List<CellHighlight>();
 
 		foreach (CellTerrain cell in neighbours)
-			neighboursHCells.Add(gameGrid.SpawnOnCell(gameGrid.cellHighlightPrefab.gameObject, currentCell).GetComponent<CellHighlight>());
+			neighboursHCells.Add(gameGrid.SpawnOnCell(gameGrid.cellHighlight.gameObject, currentCell).GetComponent<CellHighlight>());
 
 		return neighboursHCells;
-	}
+	}^*/
 }

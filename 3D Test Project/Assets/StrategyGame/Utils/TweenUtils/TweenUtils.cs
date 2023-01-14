@@ -5,15 +5,15 @@ using DigitalRuby.Tween;
 
 public static class TweenUtils {
 
-    public static void TweenMoveUnit(Unit unit, Vector3 endPos, System.Func<float,float> tweenScale) {
+    public static void TweenMove(GameObject gobj, Vector3 endPos, System.Func<float,float> tweenScale, float duration = 0.2f) {
 
-		Vector3 startPos = unit.transform.position;
+		Vector3 startPos = gobj.transform.position;
 
-		System.Action<ITween<Vector3>> updateUnitPos = (t) =>
-		{
-			unit.transform.position = t.CurrentValue;
+		System.Action<ITween<Vector3>> updateUnitPos = (t) => {
+
+			gobj.transform.position = t.CurrentValue;
 		};
 
-		unit.gameObject.Tween($"TweenMoveUnit:{unit.GetHashCode()}", startPos, endPos, 3f, tweenScale, updateUnitPos);
+		gobj.Tween($"TweenMove:{gobj.GetHashCode()}", startPos, endPos, duration, tweenScale, updateUnitPos);
 	}
 }
