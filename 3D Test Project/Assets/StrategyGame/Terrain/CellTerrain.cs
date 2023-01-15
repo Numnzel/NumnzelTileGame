@@ -71,7 +71,9 @@ public class CellTerrain : MonoBehaviour {
 		//	return false;
 
 		//content.Remove(gameObject);
-		content.Clear();
+		int cuantity = content.Count;
+		content = new List<GameObject>();
+		Debug.Log($"Old Cuantity: {cuantity}, Cuantity: {content.Count}");
 
 		return true;
 	}

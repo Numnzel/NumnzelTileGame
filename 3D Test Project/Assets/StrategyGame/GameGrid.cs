@@ -60,7 +60,7 @@ public class GameGrid : MonoBehaviour {
 				totalUnits++;
 		}
 
-		Debug.Log(totalUnits);
+		Debug.Log($"Total units: {totalUnits}");
 	}
 
 	void GenerateGrid() {
@@ -171,43 +171,20 @@ public class GameGrid : MonoBehaviour {
 		TweenUtils.TweenMove(gameObj, targetCellPos, tweenScale, duration);
 	}
 
-	///<summary> Method: Move a GameObject and link it to a terrain cell. </summary>
-	public static void MoveLinkToCell(GameObject gameObj, CellTerrain targetCell, System.Func<float, float> tweenScale, float duration = 0) {
-
-		if (gameObj == null || targetCell == null || !targetCell.CompareTag(TagTerrain) || targetCell.GetUnit() != null)
-			return;
-
-		// unlink unit from original cell
-		CellTerrain originalCell = ReadCell(gameObj.transform.position);
-		if (originalCell != null)
-			Instance.UnlinkFromCell(gameObj, originalCell);
-
-		// link unit to target cell
-		if (!Instance.LinkToCell(gameObj, targetCell))
-			return;
-
-		// check movement type
-		if (tweenScale == null || duration == 0)
-			MoveToCell(gameObj.gameObject, targetCell, true);
-		else
-			MoveTweenToCell(gameObj.gameObject, targetCell, tweenScale, duration);
-	}
-
 	///<summary> Method: Links a GameObject to a terrain cell. </summary>
-	public bool LinkToCell(GameObject gameObj, CellTerrain targetCell) {
+	public static bool LinkToCell(GameObject gameObj, CellTerrain targetCell) {
 
 		if (targetCell == null || !targetCell.CompareTag(TagTerrain))
 			return false;
 
-		return targetCell.AddContent(gameObj);
+		return targetCell.AddContent(gameObj.gameObject);
 	}
 
 	///<summary> Method: Unlinks a GameObject from a terrain cell. </summary>
-	public bool UnlinkFromCell(GameObject gameObj, CellTerrain targetCell) {
+	public static bool UnlinkFromCell(GameObject gameObj, CellTerrain targetCell) {
 
 		if (targetCell == null || !targetCell.CompareTag(TagTerrain))
 			return false;
-
 		return targetCell.RemoveContent(gameObj.gameObject);
 	}
 
@@ -233,7 +210,6 @@ public class GameGrid : MonoBehaviour {
 
 		if (RayCastTerrain(ray, out hit, 8f))
 			terrainObject = hit.collider.gameObject.GetComponent<CellTerrain>();
-
 		return terrainObject;
 	}
 
@@ -302,19 +278,10 @@ public class GameGrid : MonoBehaviour {
 
 			openList.Remove(currentCell);
 			closedList.Add(currentCell);
-			
-			//currentCell.transform.localPosition = new Vector3(currentCell.transform.localPosition.x, currentCell.transform.localPosition.y + 0.5f, currentCell.transform.localPosition.z);
 
 			if (currentCell == targetCell) {
 
 				List<CellTerrain> endList = GetFinishedList(originCell, targetCell);
-				/*
-				int i = 0;
-				foreach (CellTerrain cell in endList) {
-					++i;
-					Debug.DrawRay(cell.transform.position + (Vector3.up * 0.5f), Vector3.down * 0.5f, new Color(0.0f + (0.12f * i), 1.0f - (0.12f * i), 0), 6000);
-				}*/
-
 				return endList;
 			}
 
@@ -322,17 +289,10 @@ public class GameGrid : MonoBehaviour {
 
 			foreach (CellTerrain cell in neighbourCells) {
 
-				if (cell.GetUnit() != null) {
-					Debug.Log("There is a unit");
+				if (cell.GetUnit() != null || closedList.Contains(cell))
 					continue;
-				}
 
-				if (closedList.Contains(cell)) {
-					Debug.Log("Contained");
-					continue;
-				}
-
-				cell.G = GetManhattanDistance(currentCell, cell);
+				cell.G = GetManhattanDistance(originCell, cell);
 				cell.H = GetManhattanDistance(targetCell, cell);
 
 				cell.previous = currentCell;
