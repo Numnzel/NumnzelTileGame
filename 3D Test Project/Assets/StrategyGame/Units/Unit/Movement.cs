@@ -18,15 +18,15 @@ public class Movement : MonoBehaviour {
 		//foreach (CellTerrain cell in pathCells) {
 		//	cell.transform.localPosition = new Vector3 (cell.transform.localPosition.x, cell.transform.localPosition.y+0.1f, cell.transform.localPosition.z);
 		//}
-
+		GameGrid.UnlinkFromCell(gameObject, GameGrid.ReadCell(gameObject.transform.position));
 		tweenCoroutine = StartCoroutine(TweenMove(pathCells, duration));
+		GameGrid.LinkToCell(gameObject, targetCell);
 	}
 
 	public IEnumerator TweenMove(List<CellTerrain> pathCells, float duration) {
-
+		
 		foreach (CellTerrain cell in pathCells) {
-
-			GameGrid.MoveLinkToCell(gameObject, cell, TweenScaleFunctions.Linear, duration);
+			GameGrid.MoveTweenToCell(gameObject, cell, TweenScaleFunctions.Linear, duration, false);
 			yield return new WaitForSeconds(duration);
 		}
 	}
