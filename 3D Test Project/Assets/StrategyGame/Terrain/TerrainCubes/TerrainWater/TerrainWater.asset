@@ -15,5 +15,5 @@ MonoBehaviour:
   tName: Water
   moveCost: 99
   viewCost: 1
-  mesh: {fileID: -5495902117074765545, guid: 10075666c15c80647a07db2ba04146fa, type: 3}
-  material: {fileID: 2100000, guid: e981ebc2d05694141a654659d62d75fa, type: 2}
+  mesh: {fileID: 0}
+  material: {fileID: 2100000, guid: 93400e8a832011b459532d20fc826195, type: 2}

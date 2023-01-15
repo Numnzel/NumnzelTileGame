@@ -102,17 +102,7 @@ public class GameGrid : MonoBehaviour {
 			lineRenderer.SetPosition(1, end);
 			lineRenderer.material = gridLineMaterial;
 		}
-		/*
-		for (int x = 0; x < _width; x++) {
-			for (int z = 0; z < _height; z++) {
-
-				Vector3 pos = new Vector3(x + offsxz - (_width / 2), offsy-0.001f, z + offsxz - (_height / 2));
-				var spawnedTile = Instantiate(_tilePrefab, pos, Quaternion.identity);
-				spawnedTile.name = $"Tile X{x} Z{z}";
-			}
-		}*/
-
-		//_cam.transform.position = new Vector3
+		
 	}
 
 	///<summary> Method: Casts a ray that only interacts with terrain. </summary>
