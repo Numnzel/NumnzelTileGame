@@ -25,10 +25,10 @@ public class Move : Action {
 		// add a listener to each cell
 		foreach (CellTerrain cell in cells) {
 			
-			if (cell == null || cell.Unit != null)
+			if (cell == null || cell.GetUnit() != null)
 				continue;
 
-			GameGrid.HighlightCell(cell);
+			cell.SetHighlight(true);
 			Selector.OnClick.AddListener(Clicked);
 		}
 	}
@@ -41,16 +41,14 @@ public class Move : Action {
 	private void Clicked(CellTerrain cellTerrain) {
 
 		if (cells.Contains(cellTerrain))
-			movement.Move(cellTerrain);
+			movement.Move(cellTerrain, 0.4f);
 
 		foreach (CellTerrain cell in cells) {
 
 			if (cell == null)
 				continue;
 
-			CellHighlight cellHighlight = cell.GetComponentInChildren<CellHighlight>();
-			if (cellHighlight != null)
-				GameGrid.RemoveOnCell(cellHighlight.gameObject, cell);
+			cell.SetHighlight(false);
 
 			Selector.OnClick.RemoveAllListeners();
 		}

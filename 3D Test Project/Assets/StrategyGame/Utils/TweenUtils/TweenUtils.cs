@@ -5,7 +5,7 @@ using DigitalRuby.Tween;
 
 public static class TweenUtils {
 
-    public static void TweenMove(GameObject gobj, Vector3 endPos, System.Func<float,float> tweenScale, float duration = 0.2f) {
+    public static void TweenMove(GameObject gobj, Vector3 endPos, System.Func<float,float> tweenScale, float duration) {
 
 		Vector3 startPos = gobj.transform.position;
 
