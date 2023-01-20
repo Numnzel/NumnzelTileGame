@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
@@ -29,6 +30,8 @@ public class PlayerController : Controller, IActor {
 		selector = selectorObject.GetComponent<Selector>();
 		cameraSystem = cameraSystemObject.GetComponent<CameraSystem>();
 		faction = GetComponent<Faction>();
+		OnClick.AddListener(SelectorSelect);
+		OnHover.AddListener(SelectorHover);
 	}
 
 	void Update() {
@@ -36,7 +39,7 @@ public class PlayerController : Controller, IActor {
 		dTime = Time.deltaTime;
 		TickInputs(dTime);
 
-		HandleInputs();
+		UpdateSelectorPosition();
 		CameraNavigation();
 	}
 
@@ -57,23 +60,42 @@ public class PlayerController : Controller, IActor {
 	/// <summary>
 	/// Update the selector position to the cell at mouse position, updates the UI if so
 	/// </summary>
-	void HandleInputs() {
+	void UpdateSelectorPosition() {
 
 		if (selector.TryMoveToMouseCell(MousePosition)) {
 
-			selector.HoveredUnitCircleExit();
-			selector.HoveredUnitIndicatorDeselect();
-			selector.Hover();
-			selector.HoveredUnitCircleEnter();
-			selector.HoveredUnitIndicatorHighlight();
-			selector.UpdateUIHoveredCell();
+			HoverCell = selector.currentCell;
+
+			if (OnHover != null)
+				OnHover.Invoke();
 		}
+	}
+
+	void SelectorHover() {
+
+		selector.HoveredUnitCircleExit();
+		selector.HoveredUnitIndicatorDeselect();
+		selector.Hover();
+		selector.HoveredUnitCircleEnter();
+		selector.HoveredUnitIndicatorHighlight();
+		selector.UpdateUIHoveredCell();
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	void PlayerSelection() {
+
+		CurrentCell = Selector.Instance.currentCell;
+
+		if (OnClick != null)
+			OnClick.Invoke();
 	}
 
 	/// <summary>
 	/// The selector tries to select an unit at his position and updates the UI acordingly
 	/// </summary>
-	void SelectorSelection() {
+	void SelectorSelect() {
 		
 		// Check that the mouse cursor is not hovering an UI element
 		if (!isPointerOverGameObject) {
@@ -103,7 +125,7 @@ public class PlayerController : Controller, IActor {
 	public void OnHandleSelection(InputAction.CallbackContext context) {
 
 		if (context.performed)
-			SelectorSelection();
+			PlayerSelection();
 	}
 
 	public void OnCameraNavigation(InputAction.CallbackContext context) {

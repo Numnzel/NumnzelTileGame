@@ -175,6 +175,7 @@ public class GameGrid : MonoBehaviour {
 
 		if (targetCell == null || !targetCell.CompareTag(TagTerrain))
 			return false;
+
 		return targetCell.RemoveContent(gameObj.gameObject);
 	}
 

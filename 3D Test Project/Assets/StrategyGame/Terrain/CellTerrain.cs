@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static ArrowTranslator;
 
 [ExecuteInEditMode]
 
@@ -18,10 +19,12 @@ public class CellTerrain : MonoBehaviour {
 	public int H;
 	public int F { get => G + H; }
 	public CellTerrain previous;
+	public List<Sprite> arrowSprites;
 
 	public int MoveCost { get => moveCost; }
 	public int ViewCost { get => viewCost; }
 	public string TName { get => tName; }
+
 	private List<GameObject> content;
 
 	void Awake() {
@@ -55,6 +58,21 @@ public class CellTerrain : MonoBehaviour {
 		cellHighlight.SetActive(state);
 	}
 
+	public void SetArrowSprite(ArrowDirection dir) {
+
+		SpriteRenderer arrow = GetComponentInChildren<SpriteRenderer>();
+
+		if (arrow == null)
+			return;
+
+		if (dir == ArrowDirection.None)
+			arrow.color = new Color(1, 1, 1, 0);
+		else {
+			arrow.color = new Color(1, 0, 0, 1);
+			arrow.sprite = arrowSprites[(int)dir];
+		}
+	}
+
 	public bool AddContent(GameObject gameObject) {
 
 		if (gameObject == null || content.Count >= 1)
@@ -67,7 +85,6 @@ public class CellTerrain : MonoBehaviour {
 
 	public bool RemoveContent(GameObject gameObject) {
 
-		int cuantity = content.Count;
 		content = new List<GameObject>();
 
 		return true;

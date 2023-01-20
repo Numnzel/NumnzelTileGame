@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(Faction))]
 public abstract class Controller : MonoBehaviour {
-    
-    Unit unit;
 
-    void Start() {
-
-        //if (unit != null)
-        //    unit.DoAction();
-    }
+	public UnityEvent OnClick;
+	public UnityEvent OnHover;
+	public CellTerrain CurrentCell;
+	public CellTerrain HoverCell;
 }

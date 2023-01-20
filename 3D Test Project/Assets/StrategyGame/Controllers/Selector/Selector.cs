@@ -9,14 +9,12 @@ public class Selector : MonoBehaviour {
 
 	static Selector _instance;
 	public static Selector Instance { get => _instance; }
-	public static UnityEvent<CellTerrain> OnClick { get => Instance._onClick; set => Instance._onClick = value; }
-
+	
 	GameGrid gameGrid;
-	CellTerrain currentCell;
+	public CellTerrain currentCell;
 	public Unit selectedUnit;
 	public Unit hoveredUnit;
 
-	public UnityEvent<CellTerrain> _onClick;
 
 	void Awake() {
 
@@ -122,9 +120,6 @@ public class Selector : MonoBehaviour {
 	public void Select() {
 
 		selectedUnit = currentCell.GetUnit();
-
-		if (OnClick != null)
-			OnClick.Invoke(currentCell);
 	}
 
 	public void Hover() {
