@@ -13,22 +13,22 @@ public class SkillMove : Action {
 	UnityAction clickAction;
 	UnityAction hoverAction;
 
-	public override void Execute(GameObject parent) {
+	public override ActionState Execute(GameObject parent) {
 
 		if (parent == null)
-			return;
+			return ActionState.Error;
 
 		movement = parent.GetComponent<Movement>();
 		Faction faction = parent.GetComponent<Faction>();
 
 		if (movement == null || faction == null)
-			return;
+			return ActionState.Error;
 
 		Controller controller = GameManager.Instance.Controllers[faction.factionNumber];
 		CellTerrain parentCell = GameGrid.ReadCell(parent.transform.position);
 
 		if (controller == null || parentCell == null)
-			return;
+			return ActionState.Error;
 
 		// get available cells to move
 		cells = GameGrid.GetMovementCells(parentCell, movement.movement);
@@ -48,6 +48,8 @@ public class SkillMove : Action {
 
 			cell.SetHighlight(true);
 		}
+
+		return ActionState.Success;
 	}
 
 	private void Clicked(Controller controller) {
@@ -83,13 +85,18 @@ public class SkillMove : Action {
 
 		path = GameGrid.AStar(parentCell, controller.HoverCell);
 
+		// Add cell at unit position
+		path.Insert(0, parentCell);
+
+		// Generate arrow sprite with path
 		for (int i = 0; i < path.Count; i++) {
 
-			var previousTile = i > 0 ? path[i - 1] : parentCell;
-			var futureTile = i < path.Count - 1 ? path[i + 1] : null;
+			CellTerrain previousTile = i > 0 ? path[i - 1] : null;
+			CellTerrain futureTile = i < path.Count - 1 ? path[i + 1] : null;
 
-			var arrowDir = TranslateDirection(previousTile, path[i], futureTile);
-			path[i].SetArrowSprite(arrowDir);
+			ArrowInfo arrowDir = TranslateDirection(previousTile, path[i], futureTile);
+
+			path[i].SetArrowSprite(arrowDir, Color.green);
 		}
 	}
 
@@ -100,6 +107,6 @@ public class SkillMove : Action {
 
 		foreach (CellTerrain cell in path)
 			if (cell != null)
-				cell.SetArrowSprite(ArrowDirection.None);
+				cell.SetArrowSprite(new ArrowInfo());
 	}
 }

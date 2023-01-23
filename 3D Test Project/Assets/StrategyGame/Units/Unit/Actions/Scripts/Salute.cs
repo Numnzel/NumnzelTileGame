@@ -7,12 +7,12 @@ public class Salute : Action {
 
 	public string salute;
 
-	public override void Execute(GameObject parent) {
+	public override ActionState Execute(GameObject parent) {
 
 		Unit unit = parent.GetComponent<Unit>();
 
 		if (unit == null)
-			return;
+			return ActionState.Error;
 
 		// Action to be done:
 		this.Log(salute + unit.uName);
@@ -22,5 +22,7 @@ public class Salute : Action {
 		
 		if (gameGrid != null)
 			gameGrid.ReadCell(unit.transform.position);*/
+
+		return ActionState.Success;
 	}
 }

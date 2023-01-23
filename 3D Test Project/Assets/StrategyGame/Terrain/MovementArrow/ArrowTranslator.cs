@@ -4,79 +4,57 @@ using UnityEngine;
 
 public class ArrowTranslator {
 
-    public enum ArrowDirection {
+    public enum ArrowType {
 
         None = 0,
-        Up = 1,
-        Down = 2,
-        Left = 3,
-        Right = 4,
-        TopRight = 5,
-        BottomRight = 6,
-        TopLeft = 7,
-        BottomLeft = 8,
-        UpFinished = 9,
-        DownFinished = 10,
-        LeftFinished = 11,
-        RightFinished = 12
-    }
+        Base = 1,
+        Body = 2,
+        Corner = 3,
+        End = 4
+	}
 
-    public static ArrowDirection TranslateDirection(CellTerrain previousCell, CellTerrain currentCell, CellTerrain futureCell) {
+    public struct ArrowInfo {
 
-        bool isFinal = futureCell == null;
+        public Quaternion dir;
+        public ArrowType type;
+	}
 
-        Vector3 pastDir = previousCell != null ? currentCell.transform.position - previousCell.transform.position : new Vector3(0, 0);
-        Vector3 futureDir = futureCell != null ? futureCell.transform.position - currentCell.transform.position : new Vector3(0, 0);
-        Vector3 direction = pastDir != futureDir ? pastDir + futureDir : futureDir;
+    public static ArrowInfo TranslateDirection(CellTerrain pastCell, CellTerrain currentCell, CellTerrain futureCell) {
+        
+        ArrowInfo arrowInfo = new ArrowInfo();
+        Vector3 currentCellPos = currentCell.transform.position;
 
-        if (direction.x == 0 && direction.z == 1 && !isFinal)
-            return ArrowDirection.Up;
+        if (futureCell == null && pastCell != null)
+            arrowInfo.type = ArrowType.End;
+        else if (pastCell == null && futureCell != null)
+            arrowInfo.type = ArrowType.Base;
 
-        if (direction.x == 0 && direction.z == -1 && !isFinal)
-            return ArrowDirection.Down;
+        Vector3 pastDir = pastCell != null ? currentCellPos - pastCell.transform.position : new Vector3(0, 0, 0);
+        Vector3 futureDir = futureCell != null ? futureCell.transform.position - currentCellPos : new Vector3(0, 0, 0);
 
-        if (direction.x == 1 && direction.z == 0 && !isFinal)
-            return ArrowDirection.Right;
+        if (arrowInfo.type == ArrowType.None && futureCell != null && pastCell != null)
+		    switch (Vector3.Dot(pastDir, futureDir)) {
+                case 1:
+                    arrowInfo.type = ArrowType.Body;
+                    break;
+                case 0:
+                    arrowInfo.type = ArrowType.Corner;
+                    break;
+                default:
+                    arrowInfo.type = ArrowType.None;
+                    break;
+		    }
 
-        if (direction.x == -1 && direction.z == 0 && !isFinal)
-            return ArrowDirection.Left;
+        if (arrowInfo.type == ArrowType.Corner) {
+            Quaternion newRotation = Quaternion.LookRotation(pastDir, Vector3.down);
+            Vector3 cross = Vector3.Cross(pastDir, futureDir);
+            arrowInfo.dir = cross.y > 0 ? newRotation * Quaternion.Euler(0, 90, 0) : newRotation * Quaternion.Euler(0, 0, 0);
+        }
+        else
+            arrowInfo.dir = Quaternion.LookRotation(futureDir + pastDir, Vector3.down);
 
-        if (direction.x == 1 && direction.z == 1)
-            if (pastDir.z < futureDir.z)
-                return ArrowDirection.BottomLeft;
-            else
-                return ArrowDirection.TopRight;
-
-        if (direction.x == -1 && direction.z == 1)
-            if (pastDir.z < futureDir.z)
-                return ArrowDirection.BottomRight;
-            else
-                return ArrowDirection.TopLeft;
-
-        if (direction.x == 1 && direction.z == -1)
-            if (pastDir.z > futureDir.z)
-                return ArrowDirection.TopLeft;
-            else
-                return ArrowDirection.BottomRight;
-
-        if (direction.x == -1 && direction.z == -1)
-            if (pastDir.z > futureDir.z)
-                return ArrowDirection.TopRight;
-            else
-                return ArrowDirection.BottomLeft;
-
-        if (direction.x == 0 && direction.z == 1 && isFinal)
-            return ArrowDirection.UpFinished;
-
-        if (direction.x == 0 && direction.z == -1 && isFinal)
-            return ArrowDirection.DownFinished;
-
-        if (direction.x == 1 && direction.z == 0 && isFinal)
-            return ArrowDirection.RightFinished;
-
-        if (direction.x == -1 && direction.z == 0 && isFinal)
-            return ArrowDirection.LeftFinished;
-
-        return ArrowDirection.None;
+        arrowInfo.dir.eulerAngles = new Vector3 (arrowInfo.dir.eulerAngles.x, arrowInfo.dir.eulerAngles.z, arrowInfo.dir.eulerAngles.y);
+        
+        return arrowInfo;
     }
 }

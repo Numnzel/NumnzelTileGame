@@ -58,19 +58,21 @@ public class CellTerrain : MonoBehaviour {
 		cellHighlight.SetActive(state);
 	}
 
-	public void SetArrowSprite(ArrowDirection dir) {
+	public void SetArrowSprite(ArrowInfo dir, Color? color = null) {
 
 		SpriteRenderer arrow = GetComponentInChildren<SpriteRenderer>();
 
 		if (arrow == null)
 			return;
 
-		if (dir == ArrowDirection.None)
-			arrow.color = new Color(1, 1, 1, 0);
+		if (dir.type == ArrowType.None)
+			arrow.color = new Color(0, 0, 0, 0);
 		else {
-			arrow.color = new Color(1, 0, 0, 1);
-			arrow.sprite = arrowSprites[(int)dir];
+			arrow.color = (Color)((color == null) ? Color.white : color);
+			arrow.sprite = arrowSprites[(int)dir.type];
 		}
+
+		arrow.transform.localRotation = dir.dir;
 	}
 
 	public bool AddContent(GameObject gameObject) {
